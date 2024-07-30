@@ -1,8 +1,8 @@
 #ifndef TEST_UTILS_H
 #define TEST_UTILS_H
 
-#include "../global_macros.h"
+#include "../globals.h"
 
-void printBoard(char board[BRD_SIZE_X][BRD_SIZE_Y]);
+void printBoard();
 
 #endif // TEST_UTILS_H
