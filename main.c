@@ -15,6 +15,14 @@ typedef struct {
   char visChar;
 } brdSymbol;
 
+typedef struct snakeNode {
+  int x;
+  int y;
+
+  char dir;
+  struct snakeNode* prev;
+} snakePart;
+
 int randomInt(const int start, const int end);
 void sleep_ms(const int ms);
 void mvSymbol(brdSymbol* symbol, const char dir);
@@ -66,15 +74,19 @@ int main() {
 
   board[player.y][player.x] = player.visChar;
 
+  system("clear");
   printBoard();
+  printf("x: %d\n", player.x);
+  printf("y: %d\n", player.y);
 
   while (1) {
     fflush(stdout);
     char buf[1] = {0};
-    read(STDIN_FILENO, buf, 1);
+    if (read(STDIN_FILENO, buf, 1) == 0)
+      continue;
     char input = buf[0];
 
-    if (input == 0 || !isalpha(input))
+    if (!isalpha(input))
       continue;
 
     input = tolower(input);
@@ -147,4 +159,8 @@ void mvSymbol(brdSymbol* symbol, const char dir) {
   }
 
   board[symbol->y][symbol->x] = symbol->visChar;
+}
+
+void addSnakePart(snakePart** tail) {
+  *(tail)->symbolInfo.visChar = 
 }
