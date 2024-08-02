@@ -2,34 +2,22 @@
 #include <unistd.h>
 #include <termios.h>
 #include <stdlib.h>
-#include <time.h>
 #include <ctype.h>
+#include <string.h>
+#include <time.h>
 #include "./globals.h"
+#include "./utils/utils.h"
+#include "./snake/snake.h"
 
-//TEMP
-#include "./test_utils/test_utils.h"
-
-typedef struct {
-  int x;
-  int y;
-  char visChar;
-} brdSymbol;
-
-typedef struct snakeNode {
-  int x;
-  int y;
-
-  char dir;
-  struct snakeNode* prev;
-} snakePart;
-
-int randomInt(const int start, const int end);
-void sleep_ms(const int ms);
-void mvSymbol(brdSymbol* symbol, const char dir);
+void mvSnakeParts(snakePart* head);
 
 char board[BRD_SIZE_Y][BRD_SIZE_X];
 
+const char SNAKE_VIS = '#';
+
 int main() {
+  clock_t initClock = clock();
+
   // Termios setup
   struct termios attr;
 
@@ -46,19 +34,12 @@ int main() {
   // Game board setup
   for (int i = 0; i < BRD_SIZE_Y; i++) {
     for (int j = 0; j < BRD_SIZE_X; j++) {
-      if (
-          (i > 0 && i < BRD_SIZE_Y - 1)
-          && (j == 0 || j == BRD_SIZE_X - 1)
-          ) {
-        board[i][j] = '|';
-      } else if (
-          (i == 0 || i == BRD_SIZE_Y - 1)
-          && (j > 0 && j < BRD_SIZE_X - 1)
-        ) {
+      if (i == 0 || i == BRD_SIZE_Y - 1)
         board[i][j] = '-';
-      } else {
-        board[i][j] = ' ';   
-      }
+      else if (j == 0 || j == BRD_SIZE_X - 1)
+        board[i][j] = '|';
+      else
+        board[i][j] = ' ';
     }
   }
 
@@ -67,100 +48,155 @@ int main() {
   board[0][BRD_SIZE_X - 1] = '+';
   board[BRD_SIZE_Y - 1][BRD_SIZE_X - 1] = '+';
 
-  brdSymbol player;
-  player.x = randomInt(PL_BRD_XS, PL_BRD_XE);
-  player.y = randomInt(PL_BRD_YS, PL_BRD_YE);
-  player.visChar = '#';
+  char mvPoints[BRD_SIZE_Y][BRD_SIZE_X];
+  
+  for (int i = 0; i < BRD_SIZE_Y; i++) {
+    for (int j = 0; j < BRD_SIZE_X; j++) {
+      mvPoints[i][j] = '0';
+    }
+  }
 
-  board[player.y][player.x] = player.visChar;
+  int points = 0;
 
+  // Snake head setup
+  snakePart* snakeHead = (snakePart*) malloc(sizeof(snakePart));
+  snakeHead->x = randomX(initClock);
+  snakeHead->y = randomY(initClock);
+  snakeHead->visChar = SNAKE_VIS;
+  snakeHead->dir = 'w';
+  snakeHead->next = NULL;
+
+  board[snakeHead->y][snakeHead->x] = snakeHead->visChar;
+
+  // Food setup
+  struct {
+    int x;
+    int y;
+    char visChar;
+  } food;
+  food.x = randomX(initClock);
+  food.y = randomY(initClock);
+  food.visChar = '$';
+
+  board[food.y][food.x] = food.visChar;
+
+  // Screen init
   system("clear");
-  printBoard();
-  printf("x: %d\n", player.x);
-  printf("y: %d\n", player.y);
 
+  // Game loop
   while (1) {
     fflush(stdout);
     char buf[1] = {0};
-    if (read(STDIN_FILENO, buf, 1) == 0)
-      continue;
-    char input = buf[0];
+    if (read(STDIN_FILENO, buf, 1) != 0 && isalpha(buf[0])) {
+      char input = buf[0];
 
-    if (!isalpha(input))
-      continue;
+      input = tolower(input);
 
-    input = tolower(input);
-    
-    switch (input) {
-      case 'w':
-        mvSymbol(&player, 'u');
-        break;
-      case 's':
-        mvSymbol(&player, 'd');
-        break;
-      case 'a':
-        mvSymbol(&player, 'l');
-        break;
-      case 'd':
-        mvSymbol(&player, 'r');
-        break;
-      default:
-        NULL;
+      if (
+          input == 'w'
+          || input == 's'
+          || input == 'a'
+          || input == 'd'
+          ) {
+        if (points > 0)
+          mvPoints[snakeHead->y][snakeHead->x] = input;
+        snakeHead->dir = input;
+      }
     }
-  
+
+    for (int i = 0; i < BRD_SIZE_Y; i++) {
+      for (int j = 0; j < BRD_SIZE_X; j++) {
+        if (mvPoints[i][j] == '0')
+          continue;
+
+        snakePart* part = snakeHead;
+        while (part->next != NULL) {
+          part = part->next;
+
+          if (part->y == i && part->x == j) {
+            part->dir = mvPoints[i][j];
+            if (part->next == NULL)
+              mvPoints[i][j] = '0';
+            break;
+          }
+
+          if (part->next == NULL)
+            break;
+        }
+      }
+    }
+
+    mvSnakeParts(snakeHead);
+
+    if (snakeHead->x == food.x
+        && snakeHead->y == food.y) {
+      points++;
+      food.x = randomX(initClock);
+      food.y = randomY(initClock);
+      board[food.y][food.x] = food.visChar;
+      addSnakePart(snakeHead);
+    }
+    
     system("clear");
     printBoard();
-    printf("x: %d\n", player.x);
-    printf("y: %d\n", player.y);
+    printf("Points: %d\n", points);
+    printf("x: %d\n", snakeHead->x);
+    printf("y: %d\n", snakeHead->y);
+    printf("food x: %d\n", food.x);
+    printf("food y: %d\n", food.y);
+    printf("food: %c\n", board[food.y][food.x]);
 
-    sleep_ms(50);
+    for (int i = 0; i < BRD_SIZE_Y; i++) {
+      for (int j = 0; j < BRD_SIZE_X; j++) {
+        printf("%c ", mvPoints[i][j]);
+      }
+      printf("\n");
+    }
+
+    sleep_ms(200);
   }
 
   // Termios reset
-  tcsetattr(STDIN_FILENO, 0,&ATTR_ORIG);
+  tcsetattr(STDIN_FILENO, 0, &ATTR_ORIG);
 
   return 0;
 }
 
-int randomInt(const int start, const int end) {
-  /*
-   * Gets random int from range
-   * [start, end[
-  */
-  srand(time(NULL));
-  int result = rand() % end;
-  result = result >= start ? result : result + start;
-  return result;
-}
+void mvSnakeParts(snakePart* head) { 
+  snakePart* part = head;
+  while (1) {
+    int x = part->x;
+    int y = part->y;
 
-void sleep_ms(const int ms) {
-  usleep(ms * 1000);
-}
+    board[y][x] = ' ';
 
-void mvSymbol(brdSymbol* symbol, const char dir) { 
-  board[symbol->y][symbol->x] = ' ';
+    switch (part->dir) {
+      case 'w':
+        y = y - 1 < PL_BRD_YS ? PL_BRD_YE : y - 1;
+        break;
+      case 's':
+        y = y + 1 > PL_BRD_YE ? PL_BRD_YS : y + 1;
+        break;
+      case 'a':
+        x = x - 2 < PL_BRD_XS ? PL_BRD_XE : x - 2;
+        break;
+      case 'd':
+        x = x + 2 > PL_BRD_XE ? PL_BRD_XS : x + 2;
+        break;
+      default:
+        printf("ERROR in func mvSymbol\n");
+        printf("dir: %c\n", part->dir);
+        exit(1);
+    }
 
-  switch (dir) {
-    case 'u':
-      symbol->y = symbol->y - 1 < PL_BRD_YS ? PL_BRD_YE : symbol->y - 1;
-      break;
-    case 'd':
-      symbol->y = symbol->y + 1 > PL_BRD_YE ? PL_BRD_YS : symbol->y + 1;
-      break;
-    case 'l':
-      symbol->x = symbol->x - 2 < PL_BRD_XS ? PL_BRD_XE : symbol->x - 2;
-      break;
-    case 'r':
-      symbol->x = symbol->x + 2 > PL_BRD_XE ? PL_BRD_XS : symbol->x + 2;
-      break;
-    default:
-      printf("ERROR in func mvSymbol\n");
-      exit(1);
+    part->x = x;
+    part->y = y;
+
+    board[y][x] = part->visChar;
+
+    if (part->next == NULL)
+      return;
+
+    part = part->next;
   }
-
-  board[symbol->y][symbol->x] = symbol->visChar;
-}
-
-void addSnakePart(snakePart** tail) {
-  *(tail)->symbolInfo.visChar = 
 }

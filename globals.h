@@ -1,5 +1,5 @@
-#ifndef GLOBALS_H
-#define GLOBALS_H
+#ifndef GLOBALS_H_
+#define GLOBALS_H_
 
 #define BUF_SIZE 256
 
@@ -13,4 +13,4 @@
 #define PL_BRD_YS 1
 #define PL_BRD_YE BRD_SIZE_Y - 2
 
-#endif // GLOBALS_H
+#endif  // GLOBALS_H_
