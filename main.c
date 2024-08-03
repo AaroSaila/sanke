@@ -15,7 +15,7 @@ char board[BRD_SIZE_Y][BRD_SIZE_X];
 const char SNAKE_VIS = '#';
 
 int main() {
-  clock_t initClock = clock();
+  const clock_t initClock = clock();
 
   // Termios setup
   struct termios attr;
@@ -49,7 +49,7 @@ int main() {
 
   int points = 0;
   int gameSpeed = 0;
-  int sleepInterval = 200 - gameSpeed;
+  const int sleepInterval = 200;
 
   // Snake head setup
   snakePart* snakeHead = (snakePart*) malloc(sizeof(snakePart));
