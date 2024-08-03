@@ -1,8 +1,6 @@
 #ifndef GLOBALS_H_
 #define GLOBALS_H_
 
-#define BUF_SIZE 256
-
 // Total board size
 #define BRD_SIZE_X 30
 #define BRD_SIZE_Y 15

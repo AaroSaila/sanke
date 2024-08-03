@@ -19,10 +19,12 @@ typedef struct snakeNode {
   struct snakeNode* next;
 } snakePart;
 
+void mvSnakeParts(snakePart* head);
 void addSnakePart(snakePart* head);
 void pushOrder(order* head, char dir, int delay);
 void removeOrder(order* head);
 void addOrders(snakePart* head, char dir);
 void copyOrders(order* srcHead, order* destHead);
+bool checkCollision(snakePart* head, int x, int y);
 
 #endif  // SNAKE_H_
