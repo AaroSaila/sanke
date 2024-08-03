@@ -48,14 +48,6 @@ int main() {
   board[0][BRD_SIZE_X - 1] = '+';
   board[BRD_SIZE_Y - 1][BRD_SIZE_X - 1] = '+';
 
-  char mvPoints[BRD_SIZE_Y][BRD_SIZE_X];
-  
-  for (int i = 0; i < BRD_SIZE_Y; i++) {
-    for (int j = 0; j < BRD_SIZE_X; j++) {
-      mvPoints[i][j] = '0';
-    }
-  }
-
   int points = 0;
 
   // Snake head setup
@@ -64,6 +56,10 @@ int main() {
   snakeHead->y = randomY(initClock);
   snakeHead->visChar = SNAKE_VIS;
   snakeHead->dir = 'w';
+  snakeHead->order = (order*) malloc(sizeof(order));
+  snakeHead->order->dir = snakeHead->dir;
+  snakeHead->order->delay = -1;
+  snakeHead->order->next = NULL;
   snakeHead->next = NULL;
 
   board[snakeHead->y][snakeHead->x] = snakeHead->visChar;
@@ -87,46 +83,6 @@ int main() {
   while (1) {
     fflush(stdout);
     char buf[1] = {0};
-    if (read(STDIN_FILENO, buf, 1) != 0 && isalpha(buf[0])) {
-      char input = buf[0];
-
-      input = tolower(input);
-
-      if (
-          input == 'w'
-          || input == 's'
-          || input == 'a'
-          || input == 'd'
-          ) {
-        if (points > 0)
-          mvPoints[snakeHead->y][snakeHead->x] = input;
-        snakeHead->dir = input;
-      }
-    }
-
-    for (int i = 0; i < BRD_SIZE_Y; i++) {
-      for (int j = 0; j < BRD_SIZE_X; j++) {
-        if (mvPoints[i][j] == '0')
-          continue;
-
-        snakePart* part = snakeHead;
-        while (part->next != NULL) {
-          part = part->next;
-
-          if (part->y == i && part->x == j) {
-            part->dir = mvPoints[i][j];
-            if (part->next == NULL)
-              mvPoints[i][j] = '0';
-            break;
-          }
-
-          if (part->next == NULL)
-            break;
-        }
-      }
-    }
-
-    mvSnakeParts(snakeHead);
 
     if (snakeHead->x == food.x
         && snakeHead->y == food.y) {
@@ -136,22 +92,68 @@ int main() {
       board[food.y][food.x] = food.visChar;
       addSnakePart(snakeHead);
     }
-    
+
+    if (read(STDIN_FILENO, buf, 1) != 0 && isalpha(buf[0])) {
+      char input = buf[0];
+
+      input = tolower(input);
+
+      if (
+          (input == 'w' && snakeHead->dir != 's')
+          || (input == 's' && snakeHead->dir != 'w')
+          || (input == 'a' && snakeHead->dir != 'd')
+          || (input == 'd' && snakeHead->dir != 'a')
+          ) {
+        snakeHead->dir = input;
+        addOrders(snakeHead, input);
+      }
+    }
+
+    mvSnakeParts(snakeHead);
+
     system("clear");
     printBoard();
     printf("Points: %d\n", points);
     printf("x: %d\n", snakeHead->x);
-    printf("y: %d\n", snakeHead->y);
+    printf("y: %d\n\n", snakeHead->y);
     printf("food x: %d\n", food.x);
     printf("food y: %d\n", food.y);
-    printf("food: %c\n", board[food.y][food.x]);
 
-    for (int i = 0; i < BRD_SIZE_Y; i++) {
-      for (int j = 0; j < BRD_SIZE_X; j++) {
-        printf("%c ", mvPoints[i][j]);
+    /*
+    {
+      snakePart* current = snakeHead;
+      int i = 0;
+      while (1) {
+        printf("Part %d:\n", i);
+        printf("dir: %c\n", current->dir);
+        printf("orders: \n");
+        order* order = current->order;
+        int order_i = 0;
+        while (1) {
+          printf("\t\nOrder %d:\n", order_i);
+          printf("\tdir: %c\n", order->dir);
+          printf("\tdelay: %d\n", order->delay);
+          printf("\tnext: ");
+          if (order->next == NULL)
+            printf("NULL\n");
+          else
+            printf("exists\n");
+          
+          if (order->next == NULL)
+            break;
+
+          order = order->next;
+
+          order_i++;
+        }
+        if (current->next == NULL)
+          break;
+
+        current = current->next;
+        i++;
       }
-      printf("\n");
     }
+    */
 
     sleep_ms(200);
   }
@@ -165,6 +167,27 @@ int main() {
 void mvSnakeParts(snakePart* head) { 
   snakePart* part = head;
   while (1) {
+
+    order* orderHead = part->order;
+
+    if (orderHead->next != NULL) {
+      if (orderHead->next->delay == 0) {
+        part->dir = orderHead->next->dir;
+        removeOrder(orderHead);
+      }
+    }
+
+    if (orderHead->next != NULL) {
+      order* current = orderHead->next;
+      while (1) {
+        if (current->delay > 0)
+          current->delay--;
+        if (current->next == NULL)
+          break;
+        current = current->next;
+      }
+    }
+
     int x = part->x;
     int y = part->y;
 
@@ -178,13 +201,13 @@ void mvSnakeParts(snakePart* head) {
         y = y + 1 > PL_BRD_YE ? PL_BRD_YS : y + 1;
         break;
       case 'a':
-        x = x - 2 < PL_BRD_XS ? PL_BRD_XE : x - 2;
+        x = x - 2 < PL_BRD_XS ? PL_BRD_XE - 1 : x - 2;
         break;
       case 'd':
         x = x + 2 > PL_BRD_XE ? PL_BRD_XS : x + 2;
         break;
       default:
-        printf("ERROR in func mvSymbol\n");
+        printf("ERROR in func mvSnakeParts\n");
         printf("dir: %c\n", part->dir);
         exit(1);
     }

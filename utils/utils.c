@@ -23,7 +23,7 @@ int randomX(const clock_t initClock) {
   const unsigned int seed = clock() - initClock;
   for (int i = randomInt(0, 100, seed); ; i++) {
     x = randomInt(PL_BRD_XS, PL_BRD_XE, i);
-    if (x % 2 == 0)
+    if (x % 2 != 0)
       break;
   }
 
