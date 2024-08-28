@@ -3,6 +3,8 @@
 
 #include "../globals.h"
 
+extern boardInfo brdInfo;
+
 typedef struct orderNode {
   char dir;
   int delay;
@@ -19,8 +21,8 @@ typedef struct snakeNode {
   struct snakeNode* next;
 } snakePart;
 
-void mvSnakeParts(snakePart* head);
-void addSnakePart(snakePart* head);
+void mvSnakeParts(char board[][brdInfo.x], snakePart* head);
+void addSnakePart(char board[][brdInfo.x], snakePart* head);
 void pushOrder(order* head, char dir, int delay);
 void removeOrder(order* head);
 void addOrders(snakePart* head, char dir);

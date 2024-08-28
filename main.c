@@ -6,16 +6,35 @@
 #include <string.h>
 #include <time.h>
 #include <stdbool.h>
-#include "./globals.h"
 #include "./utils/utils.h"
 #include "./snake/snake.h"
-
-char board[BRD_SIZE_Y][BRD_SIZE_X];
+#include "globals.h"
 
 const char SNAKE_VIS = '#';
 
+boardInfo brdInfo;
+playableBoardInfo plBrdInfo;
+
 int main() {
   const clock_t initClock = clock();
+
+  // Board Constraints
+  printf("Set board size (15 - 60): ");
+  scanf("%d", &brdInfo.y);
+  if (!(brdInfo.y >= 15 && brdInfo.y <= 60)) {
+    printf("Invalid input. Board size must be greater than 0.\n");
+    exit(0);
+  }
+  brdInfo.x = brdInfo.y * 2;
+  printf("brdInfo.x: %d\n", brdInfo.x);
+  printf("brdInfo.y: %d\n", brdInfo.y);
+  char board[brdInfo.y][brdInfo.x];
+
+  plBrdInfo.xs = 1;
+  plBrdInfo.xe = brdInfo.x - 2;
+  plBrdInfo.ys = 1;
+  plBrdInfo.ye = brdInfo.y - 2;
+
 
   // Termios setup
   struct termios attr;
@@ -31,11 +50,11 @@ int main() {
   tcsetattr(STDIN_FILENO, 0, &attr);
 
   // Game board setup
-  for (int i = 0; i < BRD_SIZE_Y; i++) {
-    for (int j = 0; j < BRD_SIZE_X; j++) {
-      if (i == 0 || i == BRD_SIZE_Y - 1)
+  for (int i = 0; i < brdInfo.y; i++) {
+    for (int j = 0; j < brdInfo.x; j++) {
+      if (i == 0 || i == brdInfo.y - 1)
         board[i][j] = '-';
-      else if (j == 0 || j == BRD_SIZE_X - 1)
+      else if (j == 0 || j == brdInfo.x - 1)
         board[i][j] = '|';
       else
         board[i][j] = ' ';
@@ -43,9 +62,9 @@ int main() {
   }
 
   board[0][0] = '+';
-  board[BRD_SIZE_Y - 1][0] = '+';
-  board[0][BRD_SIZE_X - 1] = '+';
-  board[BRD_SIZE_Y - 1][BRD_SIZE_X - 1] = '+';
+  board[brdInfo.y - 1][0] = '+';
+  board[0][brdInfo.x - 1] = '+';
+  board[brdInfo.y - 1][brdInfo.x - 1] = '+';
 
   int points = 0;
   int gameSpeed = 0;
@@ -95,7 +114,7 @@ int main() {
         food.x = randomX(initClock);
         food.y = randomY(initClock);
       } while (checkCollision(snakeHead, food.x, food.y));
-      addSnakePart(snakeHead);
+      addSnakePart(board, snakeHead);
     }
 
     // Input handling
@@ -116,7 +135,7 @@ int main() {
 
     // Update board
     board[food.y][food.x] = food.visChar;
-    mvSnakeParts(snakeHead);
+    mvSnakeParts(board, snakeHead);
 
     // Snake collision
     if (snakeHead->next != NULL) {
@@ -134,50 +153,9 @@ int main() {
     }
 
     system("clear");
-    printBoard();
+    printBoard(board);
     printf("Points: %d\n", points);
     printf("Game Speed: %d\n", gameSpeed);
-
-    /*
-    printf("x: %d\n", snakeHead->x);
-    printf("y: %d\n\n", snakeHead->y);
-    printf("food x: %d\n", food.x);
-    printf("food y: %d\n", food.y);
-
-    {
-      snakePart* current = snakeHead;
-      int i = 0;
-      while (1) {
-        printf("Part %d:\n", i);
-        printf("dir: %c\n", current->dir);
-        printf("orders: \n");
-        order* order = current->order;
-        int order_i = 0;
-        while (1) {
-          printf("\t\nOrder %d:\n", order_i);
-          printf("\tdir: %c\n", order->dir);
-          printf("\tdelay: %d\n", order->delay);
-          printf("\tnext: ");
-          if (order->next == NULL)
-            printf("NULL\n");
-          else
-            printf("exists\n");
-          
-          if (order->next == NULL)
-            break;
-
-          order = order->next;
-
-          order_i++;
-        }
-        if (current->next == NULL)
-          break;
-
-        current = current->next;
-        i++;
-      }
-    }
-    */
 
     sleep_ms(sleepInterval - gameSpeed);
   }
@@ -187,7 +165,7 @@ game_over:
   // Game over
   system("clear");
 
-  printBoard();
+  printBoard(board);
   printf("Final Points: %d\n", points);
   printf("Final Game Speed: %d\n", gameSpeed);
 

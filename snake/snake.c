@@ -3,10 +3,11 @@
 #include <stdbool.h>
 #include "snake.h"
 
-extern char board[BRD_SIZE_Y][BRD_SIZE_X];
 extern char SNAKE_VIS;
+extern boardInfo brdInfo;
+extern playableBoardInfo plBrdInfo;
 
-void mvSnakeParts(snakePart* head) { 
+void mvSnakeParts(char board[][brdInfo.x], snakePart* head) { 
   snakePart* part = head;
   while (1) {
 
@@ -37,16 +38,16 @@ void mvSnakeParts(snakePart* head) {
 
     switch (part->dir) {
       case 'w':
-        y = y - 1 < PL_BRD_YS ? PL_BRD_YE : y - 1;
+        y = y - 1 < plBrdInfo.ys ? plBrdInfo.ye : y - 1;
         break;
       case 's':
-        y = y + 1 > PL_BRD_YE ? PL_BRD_YS : y + 1;
+        y = y + 1 > plBrdInfo.ye ? plBrdInfo.ys : y + 1;
         break;
       case 'a':
-        x = x - 2 < PL_BRD_XS ? PL_BRD_XE - 1 : x - 2;
+        x = x - 2 < plBrdInfo.xs ? plBrdInfo.xe - 1 : x - 2;
         break;
       case 'd':
-        x = x + 2 > PL_BRD_XE ? PL_BRD_XS : x + 2;
+        x = x + 2 > plBrdInfo.xe ? plBrdInfo.xs : x + 2;
         break;
       default:
         printf("ERROR in func mvSnakeParts\n");
@@ -66,7 +67,7 @@ void mvSnakeParts(snakePart* head) {
   }
 }
 
-void addSnakePart(snakePart* head) {
+void addSnakePart(char board[][brdInfo.x], snakePart* head) {
   snakePart* tail = head;
 
   while (tail->next != NULL)
