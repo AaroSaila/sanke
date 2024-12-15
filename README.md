@@ -17,7 +17,7 @@ Each part of the snake is a node of a dynamically allocated linked list that con
 - A pointer to a order node (more on orders below)
 - A pointer to the next snake part node
 
-An order keeps information on when a snake part should change to what direction. An order is also a node in a dynamically allocated linked list that contains:
+An order keeps information on when the direction of the snake part has to change and to which direction it should change. An order is also a node in a dynamically allocated linked list that contains:
 - The direction that this order eventually tells the snake part to go to
 - The delay i.e. how many ticks until the snake part has to change direction.
 - A pointer to the next order
