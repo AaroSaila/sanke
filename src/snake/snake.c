@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "snake.h"
+#include "../board/board.h"
 
 extern char SNAKE_VIS;
 extern boardInfo brdInfo;
@@ -106,6 +107,23 @@ void addSnakePart(char board[][brdInfo.x], snakePart* head) {
       printf("Invalid direction in func addSnakePart\n");
       exit(1);
   }
+
+  /*
+    Untested fix to a bug where the new part
+    would replace a part of the board border.
+  */
+  if (newTail->x > plBrdInfo.xe) {
+    newTail->x = plBrdInfo.xs;
+  } else if (newTail->x < plBrdInfo.xs) {
+    newTail->x = plBrdInfo.xe;
+  }
+
+  if (newTail->y > plBrdInfo.ye) {
+    newTail->y = plBrdInfo.ys;
+  } else if (newTail->y < plBrdInfo.ys) {
+    newTail->y = plBrdInfo.ye;
+  }
+  // bugfix end
 
   newTail->next = NULL;
 

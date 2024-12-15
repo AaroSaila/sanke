@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include "./utils/utils.h"
 #include "./snake/snake.h"
+#include "./board/board.h"
 #include "globals.h"
 
 const char SNAKE_VIS = '#';
@@ -50,21 +51,7 @@ int main() {
   tcsetattr(STDIN_FILENO, 0, &attr);
 
   // Game board setup
-  for (int i = 0; i < brdInfo.y; i++) {
-    for (int j = 0; j < brdInfo.x; j++) {
-      if (i == 0 || i == brdInfo.y - 1)
-        board[i][j] = '-';
-      else if (j == 0 || j == brdInfo.x - 1)
-        board[i][j] = '|';
-      else
-        board[i][j] = ' ';
-    }
-  }
-
-  board[0][0] = '+';
-  board[brdInfo.y - 1][0] = '+';
-  board[0][brdInfo.x - 1] = '+';
-  board[brdInfo.y - 1][brdInfo.x - 1] = '+';
+  setBoardBorders(board);
 
   int points = 0;
   int gameSpeed = 0;

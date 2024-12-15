@@ -10,6 +10,7 @@ int randomInt(const int start, const int end, const unsigned int seed);
 int randomX(const clock_t initClock);
 int randomY(const clock_t initClock);
 void sleep_ms(const int ms);
+void setBoardBorders(char board[][brdInfo.x]);
 void printBoard(char board[][brdInfo.x]);
 
 #endif  // UTILS_H_
