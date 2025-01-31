@@ -23,7 +23,7 @@ An order keeps information on when a snake part should change to what direction.
 - A pointer to the next order
 
 ## Info
-Only tested and designed to work with the combination of
+Only tested with the combination of
 - GCC
 - Linux
 - x86 CPU
