@@ -11,12 +11,18 @@
 #include "./board/board.h"
 #include "globals.h"
 
+static const float VERSION = 1.1f;
+
 const char SNAKE_VIS = '#';
 
 boardInfo brdInfo;
 playableBoardInfo plBrdInfo;
 
-int main() {
+void cmd_args(int argc, char** argv);
+
+int main(int argc, char** argv) {
+  cmd_args(argc, argv);
+
   const clock_t initClock = clock();
 
   // Board Constraints
@@ -159,4 +165,19 @@ game_over:
   tcsetattr(STDIN_FILENO, 0, &ATTR_ORIG);
 
   return 0;
+}
+
+void cmd_args(int argc, char** argv) {
+  if (argc == 1) {
+    return;
+  }
+
+  if (
+      strcmp(argv[1], "--version") == 0
+      || strcmp(argv[1], "-v") == 0
+      )
+  {
+    printf("Sanke version %g\n", VERSION);
+    exit(0);
+  }
 }
