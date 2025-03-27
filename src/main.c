@@ -11,7 +11,7 @@
 #include "./board/board.h"
 #include "globals.h"
 
-static const float VERSION = 1.1f;
+const char VERSION[] = "1.1.5";
 
 const char SNAKE_VIS = '#';
 
@@ -19,6 +19,8 @@ boardInfo brdInfo;
 playableBoardInfo plBrdInfo;
 
 void cmd_args(int argc, char** argv);
+void emptyStdinBuffer();
+void getIntOrMinusOne(int* dst);
 
 int main(int argc, char** argv) {
   cmd_args(argc, argv);
@@ -28,19 +30,29 @@ int main(int argc, char** argv) {
   // Board Constraints
   printf("Set board size (15 - 60): ");
   scanf("%d", &brdInfo.y);
+  emptyStdinBuffer();
   if (!(brdInfo.y >= 15 && brdInfo.y <= 60)) {
     printf("Invalid input. Board size must be greater than 0.\n");
     exit(0);
   }
   brdInfo.x = brdInfo.y * 2;
-  printf("brdInfo.x: %d\n", brdInfo.x);
-  printf("brdInfo.y: %d\n", brdInfo.y);
+  /*printf("brdInfo.x: %d\n", brdInfo.x);*/
+  /*printf("brdInfo.y: %d\n", brdInfo.y);*/
   char board[brdInfo.y][brdInfo.x];
 
   plBrdInfo.xs = 1;
   plBrdInfo.xe = brdInfo.x - 2;
   plBrdInfo.ys = 1;
   plBrdInfo.ye = brdInfo.y - 2;
+
+
+  // Set gamespeed
+  int gameSpeed = 0;
+  printf("Enter gamespeed (0): ");
+  getIntOrMinusOne(&gameSpeed);
+  if (gameSpeed == -1) {
+    gameSpeed = 0;
+  }
 
 
   // Termios setup
@@ -60,7 +72,6 @@ int main(int argc, char** argv) {
   setBoardBorders(board);
 
   int points = 0;
-  int gameSpeed = 0;
   const int sleepInterval = 200;
 
   // Snake head setup
@@ -177,7 +188,34 @@ void cmd_args(int argc, char** argv) {
       || strcmp(argv[1], "-v") == 0
       )
   {
-    printf("Sanke version %g\n", VERSION);
+    printf("Sanke version %s\n", VERSION);
     exit(0);
   }
+}
+
+void emptyStdinBuffer() {
+  char ch;
+  while ((ch = getchar()) != '\n');
+}
+
+void getIntOrMinusOne(int* dst) {
+  char iBuf[100];
+  char num[100];
+  int i = 0;
+
+  fgets(iBuf, 100, stdin);
+
+  while (!isdigit(iBuf[i])) {
+    if (iBuf[i] == '\0') {
+      *dst = -1;
+      return;
+    }
+    i++;
+  }
+
+  for (int j = 0; i < strlen(iBuf); i++, j++) {
+    num[j] = iBuf[i];
+  }
+
+  *dst = atoi(num);
 }
