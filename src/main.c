@@ -11,7 +11,7 @@
 #include "./snake/snake.h"
 #include "./board/board.h"
 
-const char* VERSION = "1.1.7";
+const char* VERSION = "1.1.8";
 
 const char SNAKE_VIS = '#';
 
@@ -28,12 +28,12 @@ int main(int argc, char** argv) {
   const clock_t initClock = clock();
 
   // Board Constraints
-  printf("Set board size (15 - 60): ");
-  scanf("%d", &brdInfo.y);
-  emptyStdinBuffer();
-  if (!(brdInfo.y >= 15 && brdInfo.y <= 60)) {
-    printf("Invalid input. Board size must be greater than 0.\n");
-    exit(0);
+  printf("Set board size (15 - 60, default: 15): ");
+  /*scanf("%d", &brdInfo.y);*/
+  /*emptyStdinBuffer();*/
+  getIntOrMinusOne(&brdInfo.y);
+  if (!(brdInfo.y >= 15 && brdInfo.y <= 60) || brdInfo.y == -1) {
+    brdInfo.y = 15;
   }
   brdInfo.x = brdInfo.y * 2;
   /*printf("brdInfo.x: %d\n", brdInfo.x);*/
@@ -48,9 +48,9 @@ int main(int argc, char** argv) {
 
   // Set gamespeed
   int gameSpeed = 0;
-  printf("Enter gamespeed (0): ");
+  printf("Enter gamespeed (default: 0, max: 180): ");
   getIntOrMinusOne(&gameSpeed);
-  if (gameSpeed == -1) {
+  if (gameSpeed == -1 || gameSpeed > 180) {
     gameSpeed = 0;
   }
 
@@ -118,8 +118,12 @@ int main(int argc, char** argv) {
     if (snakeHead->x == food.x
         && snakeHead->y == food.y) {
       points++;
-      if (points % 5 == 0)
+      if (points % 5 == 0) {
         gameSpeed += 15;
+        if (gameSpeed > 180) {
+          gameSpeed = 180;
+        }
+      }
       do {
         food.x = randomX(initClock);
         food.y = randomY(initClock);
