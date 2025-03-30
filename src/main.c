@@ -29,8 +29,6 @@ int main(int argc, char** argv) {
 
   // Board Constraints
   printf("Set board size (15 - 60, default: 15): ");
-  /*scanf("%d", &brdInfo.y);*/
-  /*emptyStdinBuffer();*/
   getIntOrMinusOne(&brdInfo.y);
   if (!(brdInfo.y >= 15 && brdInfo.y <= 60) || brdInfo.y == -1) {
     brdInfo.y = 15;
