@@ -6,12 +6,13 @@
 #include <string.h>
 #include <time.h>
 #include <stdbool.h>
+
 #include "./utils/utils.h"
 #include "./snake/snake.h"
 #include "./board/board.h"
 #include "globals.h"
 
-const char VERSION[] = "1.1.5";
+const char* VERSION = "1.1.6";
 
 const char SNAKE_VIS = '#';
 
@@ -75,12 +76,18 @@ int main(int argc, char** argv) {
   const int sleepInterval = 200;
 
   // Snake head setup
-  snakePart* snakeHead = (snakePart*) malloc(sizeof(snakePart));
+  snakePart* snakeHead = malloc(sizeof(snakePart));
+  if (!snakeHead) {
+    mallocError("snakeHead", "main.c", "main()");
+  }
   snakeHead->x = randomX(initClock);
   snakeHead->y = randomY(initClock);
   snakeHead->visChar = '&';
   snakeHead->dir = 'w';
-  snakeHead->order = (order*) malloc(sizeof(order));
+  snakeHead->order = malloc(sizeof(order));
+  if (!snakeHead->order) {
+    mallocError("snakeHead->order", "main.c", "main()");
+  }
   snakeHead->order->dir = snakeHead->dir;
   snakeHead->order->delay = -1;
   snakeHead->order->next = NULL;

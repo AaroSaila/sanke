@@ -1,6 +1,8 @@
 #include <time.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <unistd.h>
+
 #include "utils.h"
 
 extern boardInfo brdInfo;
@@ -36,4 +38,9 @@ int randomY(const clock_t initClock) {
 
 void sleep_ms(const int ms) {
   usleep(ms * 1000);
+}
+
+void mallocError(const char* varName, const char* fileName, const char* functionName) {
+  printf("Ran out of memory to allocate to %s in %s/%s\n", varName, fileName, functionName);
+  exit(1);
 }

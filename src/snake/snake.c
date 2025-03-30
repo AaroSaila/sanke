@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+
 #include "snake.h"
 #include "../board/board.h"
+#include "../utils/utils.h"
 
 extern char SNAKE_VIS;
 extern boardInfo brdInfo;
@@ -74,11 +76,18 @@ void addSnakePart(char board[][brdInfo.x], snakePart* head) {
   while (tail->next != NULL)
     tail = tail->next;
 
-  snakePart* newTail = (snakePart*) malloc(sizeof(snakePart));
+  snakePart* newTail = malloc(sizeof(snakePart));
+  if (!newTail) {
+    mallocError("newTail", "snake.c", "addSnakePart()");
+  }
+
   newTail->visChar = SNAKE_VIS;
   newTail->dir = tail->dir;
   // Order head
-  newTail->order = (order*) malloc(sizeof(order));
+  newTail->order = malloc(sizeof(order));
+  if (!newTail->order) {
+    mallocError("newTail", "snake.c", "addSnakePart()");
+  }
   newTail->order->dir = newTail->dir;
   newTail->order->delay = -1;
   // First order if exists
@@ -137,7 +146,10 @@ void pushOrder(order* head, char dir, int delay) {
   while (current->next != NULL)
     current = current->next;
 
-  order* newOrder = (order*) malloc(sizeof(order));
+  order* newOrder = malloc(sizeof(order));
+  if (!newOrder) {
+    mallocError("newOrder", "snake.c", "pushOrder()");
+  }
   newOrder->dir = dir;
   newOrder->delay = delay;
   newOrder->next = NULL;
@@ -179,7 +191,10 @@ void copyOrders(order* srcHead, order* destHead) {
   while (srcCurrent->next != NULL) {
     srcCurrent = srcCurrent->next;
     destPrev = destCurrent;
-    destCurrent = (order*) malloc(sizeof(order));
+    destCurrent = malloc(sizeof(order));
+    if (!destCurrent) {
+      mallocError("destCurrent", "snake.c", "copyOrders()");
+    }
     destPrev->next = destCurrent;
     destCurrent->dir = srcCurrent->dir;
     destCurrent->delay = srcCurrent->delay + 1;
