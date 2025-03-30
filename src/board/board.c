@@ -1,8 +1,6 @@
 #include <stdio.h>
 
-#include "../globals.h"
-
-extern boardInfo brdInfo;
+#include "board.h"
 
 void setBoardBorders(char board[][brdInfo.x]) {
   for (int i = 0; i < brdInfo.y; i++) {

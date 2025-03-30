@@ -1,7 +1,17 @@
 #ifndef BOARD_H_
 #define BOARD_H_
 
-#include "../globals.h"
+typedef struct {
+  int x;
+  int y;
+} boardInfo;
+
+typedef struct {
+  int xs;
+  int xe;
+  int ys;
+  int ye;
+} playableBoardInfo;
 
 extern boardInfo brdInfo;
 

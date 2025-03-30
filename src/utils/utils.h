@@ -3,7 +3,7 @@
 
 #include <time.h>
 
-#include "../globals.h"
+#include "../board/board.h"
 
 extern boardInfo brdInfo;
 

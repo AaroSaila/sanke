@@ -10,9 +10,8 @@
 #include "./utils/utils.h"
 #include "./snake/snake.h"
 #include "./board/board.h"
-#include "globals.h"
 
-const char* VERSION = "1.1.6";
+const char* VERSION = "1.1.7";
 
 const char SNAKE_VIS = '#';
 
