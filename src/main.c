@@ -11,7 +11,7 @@
 #include "./snake/snake.h"
 #include "./board/board.h"
 
-const char* VERSION = "1.1.8";
+const char* VERSION = "1.1.9";
 
 const char SNAKE_VIS = '#';
 
@@ -116,12 +116,16 @@ int main(int argc, char** argv) {
     if (snakeHead->x == food.x
         && snakeHead->y == food.y) {
       points++;
-      if (points % 5 == 0) {
-        gameSpeed += 15;
-        if (gameSpeed > 180) {
-          gameSpeed = 180;
-        }
+      if (gameSpeed >= 100) {
+        gameSpeed += 5;
+      } else {
+        gameSpeed += 10;
       }
+
+      if (gameSpeed >= 180) {
+        gameSpeed = 180;
+      }
+
       do {
         food.x = randomX(initClock);
         food.y = randomY(initClock);
