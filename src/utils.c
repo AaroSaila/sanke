@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <errno.h>
 
 #include "utils.h"
 
@@ -23,5 +24,19 @@ void mallocError(const char* varName, const char* fileName, const char* function
 }
 
 void sleep_ms(const unsigned int ms) {
-  nanosleep(&(struct timespec){ .tv_sec = 0, .tv_nsec = ms * 1000000}, NULL);
+  struct timespec ts =  {
+    .tv_sec = ms / 1000
+  };
+  if (ts.tv_sec == 0) {
+    ts.tv_nsec = ms * 1000000;
+  } else {
+    ts.tv_nsec = (ms - ts.tv_sec * 1000) * 1000000;
+  }
+  // printf("timespec: {\n");
+  // printf("  tv_sec : %ld\n", ts.tv_sec);
+  // printf("  tv_nsec: %ld\n", ts.tv_nsec);
+  // printf("}\n");
+  if (nanosleep(&ts, NULL) == -1) {
+    fprintf(stderr, "ERROR: Failed to sleep. ERRNO: %d\n", errno);
+  }
 }

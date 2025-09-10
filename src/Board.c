@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "board.h"
-#include "snake.h"
+#include "Board.h"
+#include "Snake.h"
 
 #define MAT_INDEX(mat, w, i, j) (mat)[(j) + (w) * (i)]
 
@@ -73,17 +73,17 @@ void board_set_square(
 void board_clear(Board* board) {
   for (size_t i = 0; i < board->height; i++) {
     for (size_t j = 0; j < board->width; j++) {
-      printf("Clearing board: i: %zu j: %zu\n", i, j);
+      // printf("Clearing board: i: %zu j: %zu\n", i, j);
       board_set_square(board, j, i, ' ');
     }
   }
 }
 
 void board_draw_snake(Board* board, Snake* snake) {
-  SnakePart part = {};
+  BoardPiece part = {};
   for (size_t i = 0; i < snake->length; i++) {
     part = snake_get_part(snake, i);
-    board_set_square(board, part.y, part.x, part.vis_char);
+    board_set_square(board, part.x, part.y, part.vis_char);
   }
 }
 

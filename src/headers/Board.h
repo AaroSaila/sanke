@@ -1,7 +1,7 @@
 #ifndef BOARD_H_
 #define BOARD_H_
 
-#include "snake.h"
+#include "Snake.h"
 
 typedef struct {
   size_t width;
