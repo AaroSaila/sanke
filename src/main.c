@@ -3,7 +3,6 @@
 #include <termios.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <string.h>
 #include <time.h>
 
 #include "Board.h"
@@ -11,21 +10,19 @@
 #include "utils.h"
 #include "food.h"
 #include "BoardPiece.h"
+#include "args.h"
 
 #define TERMIOS 1
 #define DEBUG 0
 
-const char* VERSION = "1.1.9";
+const char* version = "1.1.9";
 
 const char snake_vis = '#';
 
-void cmd_args(int argc, char** argv);
-void empty_stdin_buffer();
-void get_int_or_minus_one(int* dst);
 struct termios set_termios();
 
 int main(int argc, char** argv) {
-  cmd_args(argc, argv);
+  Arguments args = cmd_args(argc, argv);
 
   srand(time(NULL));
 
@@ -35,8 +32,8 @@ int main(int argc, char** argv) {
 #endif // TERMIOS
 
   // Game model init
-  const int board_w = 15;
-  const int board_h = 15;
+  const int board_w = args.width;
+  const int board_h = args.height;
   Board board = board_alloc(board_w, board_h);
   Snake snake = snake_alloc(board_w * board_h, 0, 0, 'd');
   BoardPiece food = { .vis_char = '$' };
@@ -46,24 +43,11 @@ int main(int argc, char** argv) {
   // Screen init
   system("clear");
 
-  int frame = 0;
-  int fps = 0;
-
-  long second_start = time(NULL);
-  int frame_stamp = frame;
+#if DEBUG
+  long long frame = 0;
+#endif // DEBUG
 
   while (true) {
-    long second_check = time(NULL);
-    long elapsed_time = second_check - second_start;
-    if (elapsed_time >= 1) {
-      fps = frame - frame_stamp;
-      if (elapsed_time > 1) {
-        fps /= 2;
-      }
-      frame_stamp = frame;
-      second_start = time(NULL);
-    }
-
     system("clear");
 
     // Process input
@@ -85,7 +69,6 @@ int main(int argc, char** argv) {
     board_clear(&board);
     board_draw_snake(&board, &snake);
     board_set_square(&board, food.x, food.y, food.vis_char);
-    printf("FPS: %d\n", fps);
     print_board(&board);
     printf("Score: %d\n", score);
 
@@ -93,7 +76,6 @@ int main(int argc, char** argv) {
 
     if (snake_collides_with_tail(&snake)) {
       printf("GAME OVER\n");
-      printf("Final score: %d\n", score);
       exit(EXIT_SUCCESS);
     }
 
@@ -108,10 +90,10 @@ int main(int argc, char** argv) {
     printf("Frame: %d\n", frame);
     snake_print_info(&snake);
     board_piece_print_info(&food, "Food");
+    frame++;
 #endif // DEBUG
 
-    frame++;
-    sleep_ms(150);
+    sleep_ms(args.sleep_ms);
   }
 
 #if TERMIOS
@@ -119,48 +101,6 @@ int main(int argc, char** argv) {
 #endif // TERMIOS
 
   return 0;
-}
-
-void cmd_args(int argc, char** argv) {
-  if (argc == 1) {
-    return;
-  }
-
-  if (
-      strcmp(argv[1], "--version") == 0
-      || strcmp(argv[1], "-v") == 0
-      )
-  {
-    printf("Sanke version %s\n", VERSION);
-    exit(0);
-  }
-}
-
-void empty_stdin_buffer() {
-  char ch;
-  while ((ch = getchar()) != '\n');
-}
-
-void get_int_or_minus_one(int* dst) {
-  char iBuf[100];
-  char num[100];
-  size_t i = 0;
-
-  fgets(iBuf, 100, stdin);
-
-  while (!isdigit(iBuf[i])) {
-    if (iBuf[i] == '\0') {
-      *dst = -1;
-      return;
-    }
-    i++;
-  }
-
-  for (int j = 0; i < strlen(iBuf); i++, j++) {
-    num[j] = iBuf[i];
-  }
-
-  *dst = atoi(num);
 }
 
 struct termios set_termios() {
