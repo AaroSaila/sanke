@@ -15,7 +15,7 @@
 #define TERMIOS 1
 #define DEBUG 0
 
-const char* version = "1.1.9";
+const char* version = "1.2.0";
 
 const char snake_vis = '#';
 
