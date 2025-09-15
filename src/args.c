@@ -4,10 +4,8 @@
 
 #include "args.h"
 
-extern char* version;
-
 static void handle_version() {
-  printf("Sanke version %s\n", version);
+  printf("Sanke version %s\n", VERSION);
   exit(0);
 }
 

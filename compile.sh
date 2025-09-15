@@ -11,6 +11,8 @@ if [ $arg = "clean" ]; then
   exit
 fi
 
+version=$(git rev-parse HEAD)
+
 oflag="-Og"
 debug_flag="-ggdb"
 
@@ -20,7 +22,8 @@ if [ $arg = "release" ]; then
 fi
 
 src="src/*.c"
-flags="-std=c23 $oflag $debug_flag -Wall -Wextra -Werror -Wpedantic -pedantic-errors"
+macros="-DVERSION=\"$version\""
+flags="-std=c23 $oflag $debug_flag $macros -Wall -Wextra -Werror -Wpedantic -pedantic-errors"
 includes="-I src/headers"
 
 cmd="gcc $flags $includes $src -o target/sanke"

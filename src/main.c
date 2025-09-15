@@ -15,8 +15,6 @@
 #define TERMIOS 1
 #define DEBUG 0
 
-const char* version = "1.2.0";
-
 const char snake_vis = '#';
 
 struct termios set_termios();
