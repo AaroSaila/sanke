@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include "config.h"
 #include "Board.h"
 #include "Snake.h"
 
@@ -27,20 +28,20 @@ Board board_alloc(const int width, const int height) {
   const int height_with_borders_last_i = board.height_with_borders - 1;
   // Vertical bars
   for (int i = 1; i < height_with_borders_last_i; i++) {
-    MAT_INDEX(board.squares, board.width_with_borders, i, 0) = '|';
-    MAT_INDEX(board.squares, board.width_with_borders, i, width_with_borders_last_i) = '|';
+    MAT_INDEX(board.squares, board.width_with_borders, i, 0) = CHAR_BORDER_VER;
+    MAT_INDEX(board.squares, board.width_with_borders, i, width_with_borders_last_i) = CHAR_BORDER_VER;
   }
   // Horizontal lines
   for (int j = 1; j < width_with_borders_last_i; j++) {
-    MAT_INDEX(board.squares, board.width_with_borders, 0, j) = '-';
-    MAT_INDEX(board.squares, board.width_with_borders, height_with_borders_last_i, j) = '-';
+    MAT_INDEX(board.squares, board.width_with_borders, 0, j) = CHAR_BORDER_HOR;
+    MAT_INDEX(board.squares, board.width_with_borders, height_with_borders_last_i, j) = CHAR_BORDER_HOR;
   }
 
   // Corners
-  MAT_INDEX(board.squares, board.width_with_borders, 0, 0) = '+';
-  MAT_INDEX(board.squares, board.width_with_borders, height_with_borders_last_i, 0) = '+';
-  MAT_INDEX(board.squares, board.width_with_borders, 0, width_with_borders_last_i) = '+';
-  MAT_INDEX(board.squares, board.width_with_borders, height_with_borders_last_i, width_with_borders_last_i) = '+';
+  MAT_INDEX(board.squares, board.width_with_borders, 0, 0) = CHAR_BORDER_CORNER_TL;
+  MAT_INDEX(board.squares, board.width_with_borders, height_with_borders_last_i, 0) = CHAR_BORDER_CORNER_BL;
+  MAT_INDEX(board.squares, board.width_with_borders, 0, width_with_borders_last_i) = CHAR_BORDER_CORNER_TR;
+  MAT_INDEX(board.squares, board.width_with_borders, height_with_borders_last_i, width_with_borders_last_i) = CHAR_BORDER_CORNER_BR;
 
   return board;
 }
