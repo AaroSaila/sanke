@@ -13,4 +13,4 @@ The program makes the terminal use non-canonical input and output by using termi
 Only tested with the combination of
 - GCC
 - Linux
-- x86 CPU
+- x86-64 CPU
