@@ -18,6 +18,7 @@ int randomInt(const int start, const int end, const unsigned int seed) {
   return result;
 }
 
+// TODO: Make a general error logging function and macro
 void mallocError(const char* varName, const char* fileName, const char* functionName) {
   printf("Ran out of memory to allocate to %s in %s/%s\n", varName, fileName, functionName);
   exit(1);

@@ -5,6 +5,7 @@
 #include "config.h"
 #include "Board.h"
 #include "Snake.h"
+#include "utils.h"
 
 #define MAT_INDEX(mat, w, i, j) (mat)[(j) + (w) * (i)]
 
@@ -16,6 +17,9 @@ Board board_alloc(const int width, const int height) {
   board.width_with_borders = board.width + 2;
   board.height_with_borders = board.height + 2;
   board.squares = (char*) malloc(sizeof(char) * board.width_with_borders * board.height_with_borders);
+  if (board.squares == NULL) {
+      mallocError("board.squares", __FILE__, "board_alloc");
+  }
 
   for (size_t i = 1; i < board.height_with_borders; i++) {
     for (size_t j = 1; j < board.width_with_borders; j++) {

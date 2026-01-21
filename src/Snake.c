@@ -3,6 +3,7 @@
 #include <assert.h>
 
 #include "Snake.h"
+#include "utils.h"
 
 extern const char snake_vis;
 
@@ -31,6 +32,9 @@ Snake snake_alloc(
   snake.length = 1;
   snake.dir = init_dir;
   snake.parts = (BoardPiece*) malloc(sizeof(BoardPiece) * snake.max_length);
+  if (snake.parts == NULL) {
+      mallocError("snake.parts", __FILE__, "snake_alloc");
+  }
   snake.parts[0] = (BoardPiece) { .x = init_x, .y = init_y, .vis_char = '&' };
 
   return snake;
