@@ -6,6 +6,18 @@ if [ -v 1 ]; then
   arg=$1
 fi
 
+if [ $arg = "help" ]; then
+    echo "USAGE: compile.sh <option>"
+    echo ""
+    echo "Compiles debug build when called without an option."
+    echo "Options:"
+    echo "  help   : Show this help text."
+    echo "  clean  : Clean target directory."
+    echo "  release: Build with optimizations."
+    echo "  run    : Build debug build and run."
+    exit
+fi
+
 if [ $arg = "clean" ]; then
   rm -rf ./target/*
   exit
@@ -37,6 +49,5 @@ if [ $? -gt 0 ]; then
 fi
 
 if [ $arg = "run" ]; then
-  echo 
   ./target/sanke
 fi
