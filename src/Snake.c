@@ -108,13 +108,12 @@ void snake_move(Snake* snake, const int width, const int height) {
   check_bounds(snake, width, height);
 }
 
-void snake_print_info(Snake* snake) {
+void snake_print_info(const Snake* snake) {
   printf("snake: {\n");
   printf("  parts: {\n");
   for (size_t i = 0; i < snake->length; i++) {
-    BoardPiece part = snake->parts[i];
-    printf("    x: %d\n", part.x);
-    printf("    y: %d\n", part.y);
+    const BoardPiece part = snake->parts[i];
+    printf("    { x: %d, y: %d }\n", part.x, part.y);
   }
   printf("  }\n");
 

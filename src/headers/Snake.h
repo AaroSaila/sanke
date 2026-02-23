@@ -20,7 +20,7 @@ Snake snake_alloc(
     );
 void snake_free(Snake* snake);
 void snake_move(Snake* snake, const int width, const int height);
-void snake_print_info(Snake* snake);
+void snake_print_info(const Snake* snake);
 void snake_change_direction(Snake* snake, const char direction);
 bool snake_collides(const Snake* snake, const BoardPiece* piece);
 bool snake_collides_with_tail(const Snake* snake);
