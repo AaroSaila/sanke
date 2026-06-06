@@ -38,7 +38,7 @@ macros="-DVERSION=\"$version\""
 flags="-std=c23 $oflag $debug_flag $macros -Wall -Wextra -Werror -Wpedantic -pedantic-errors"
 includes="-I src/headers"
 
-cmd="gcc $flags $includes $src -o target/sanke"
+cmd="clang $flags $includes $src -o target/sanke"
 
 echo $cmd
 $cmd

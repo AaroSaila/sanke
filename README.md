@@ -31,6 +31,7 @@ for setting game options.
 The program makes the terminal use non-canonical input and output by using termios. Then it updates and prints a 2D character array containing the board borders, snake, and food. Before terminating, the program restores canonical mode.
 
 # Info
-Only tested with the combination of
+Only tested with
+- Clang
 - GCC
 - Linux
